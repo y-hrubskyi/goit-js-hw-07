@@ -10,27 +10,28 @@ let instance = null;
 function renderGalleryMarkup(arr, listRef) {
   const markup = arr
     .map(
-      ({ preview, description }, index) =>
-        `<li class="gallery__item" data-id=${index}><img class="gallery__image gallery__link" src="${preview}" alt="${description}"></li>`
+      ({ preview, original, description }) =>
+        `<li class="gallery__item">
+          <a class="gallery__link" href="${original}">
+            <img class="gallery__image" src="${preview}" alt="${description}" data-source="${original}"/>
+          </a>
+        </li>`
     )
     .join('');
   listRef.innerHTML = markup;
 }
 
 function onGalleryRefClick(event) {
-  const { target } = event;
-  if (!target.classList.contains('gallery__image')) {
+  event.preventDefault();
+  if (!event.target.classList.contains('gallery__image')) {
     return;
   }
 
-  const id = Number(target.closest('.gallery__item').dataset.id);
-  showModal(galleryItems[id]);
+  showModal(event.target);
 }
 
-function showModal({ original, description }) {
-  instance = basicLightbox.create(
-    `<img src="${original}" alt="${description}">`
-  );
+function showModal({ dataset: { source }, alt }) {
+  instance = basicLightbox.create(`<img src="${source}" alt="${alt}">`);
   instance.show();
 
   document.addEventListener('keydown', onKeyDown);
