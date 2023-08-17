@@ -31,15 +31,19 @@ function onGalleryRefClick(event) {
 }
 
 function showModal({ dataset: { source }, alt }) {
-  instance = basicLightbox.create(`<img src="${source}" alt="${alt}">`);
+  instance = basicLightbox.create(`<img src="${source}" alt="${alt}">`, {
+    onShow: () => {
+      document.addEventListener('keydown', onKeyDown);
+    },
+    onClose: () => {
+      document.removeEventListener('keydown', onKeyDown);
+    },
+  });
   instance.show();
-
-  document.addEventListener('keydown', onKeyDown);
 }
 
 function onKeyDown(event) {
   if (event.code === 'Escape') {
     instance.close();
-    document.removeEventListener('keydown', onKeyDown);
   }
 }
